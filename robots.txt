@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Troque tupilena.github.io pelo endereço real do site
+Sitemap: https://tupilena.github.io/sitemap.xml
