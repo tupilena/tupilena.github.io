@@ -32,6 +32,7 @@
   var orig = new Map();
   function store(el, key) { if (!orig.has(el)) orig.set(el, {}); var o = orig.get(el); if (!(key in o)) o[key] = key === "html" ? el.innerHTML : el.getAttribute(key); return o[key]; }
   function tr(k) { var d = (window.I18N || {})[LANG] || {}; return d[k] != null ? d[k] : (window.I18N.pt[k]); }
+  var langHooks = [];
   function applyLang(l) {
     LANG = (l === "en" || l === "es") ? l : "pt";
     var dict = (window.I18N || {})[LANG] || {};
@@ -56,6 +57,7 @@
     document.title = tr("ui.title");
     try { localStorage.setItem("tt_lang", LANG); } catch (e) {}
     renderToday();
+    langHooks.forEach(function (fn) { fn(); });
   }
   $$(".lang button").forEach(function (b) { b.addEventListener("click", function () { applyLang(b.dataset.lang); }); });
 
@@ -175,6 +177,74 @@
   var fab = $(".fab");
   function fabCheck() { fab.classList.toggle("hide", scrollY < 520); }
   fabCheck(); addEventListener("scroll", fabCheck, { passive: true });
+
+  /* ===== Lightbox (fotos do cardápio) ===== */
+  var lb = document.createElement("div");
+  lb.className = "lightbox";
+  lb.id = "lightbox";
+  lb.setAttribute("role", "dialog");
+  lb.setAttribute("aria-modal", "true");
+  lb.innerHTML = '<button type="button" class="lightbox-close" aria-label="Fechar">&times;</button><img alt="">';
+  document.body.appendChild(lb);
+  var lbImg = $("img", lb);
+  var lbClose = $(".lightbox-close", lb);
+  var lbLastFocus = null;
+
+  function lbText(key) {
+    var t = {
+      pt: { close: "Fechar", dialog: "Imagem ampliada", zoom: "Ampliar" },
+      en: { close: "Close", dialog: "Enlarged image", zoom: "Enlarge" },
+      es: { close: "Cerrar", dialog: "Imagen ampliada", zoom: "Ampliar" }
+    };
+    return (t[LANG] || t.pt)[key];
+  }
+  function syncLightboxLang() {
+    lb.setAttribute("aria-label", lbText("dialog"));
+    lbClose.setAttribute("aria-label", lbText("close"));
+    $$(".zoom-trig").forEach(function (btn) {
+      var img = $("img", btn);
+      var alt = img ? (img.getAttribute("alt") || "") : "";
+      btn.setAttribute("aria-label", alt ? lbText("zoom") + ": " + alt : lbText("zoom"));
+    });
+  }
+  function openLightbox(src, alt) {
+    setNav(false);
+    lbLastFocus = document.activeElement;
+    lbImg.src = src;
+    lbImg.alt = alt || "";
+    lb.classList.add("is-open");
+    document.body.classList.add("lb-open");
+    lbClose.focus();
+  }
+  function closeLightbox() {
+    if (!lb.classList.contains("is-open")) return;
+    lb.classList.remove("is-open");
+    lbImg.removeAttribute("src");
+    lbImg.alt = "";
+    document.body.classList.remove("lb-open");
+    if (lbLastFocus && typeof lbLastFocus.focus === "function") lbLastFocus.focus();
+  }
+  lb.addEventListener("click", closeLightbox);
+  document.addEventListener("keydown", function (e) {
+    if (!lb.classList.contains("is-open")) return;
+    if (e.key === "Escape") { e.preventDefault(); closeLightbox(); }
+    if (e.key === "Tab") { e.preventDefault(); lbClose.focus(); }
+  });
+  $$(".zoom-trig").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var img = $("img", btn);
+      var src = btn.getAttribute("data-full") || (img && (img.currentSrc || img.src));
+      var alt = img ? (img.getAttribute("alt") || "") : "";
+      openLightbox(src, alt);
+    });
+  });
+  $$("a.js-lightbox").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      openLightbox(a.getAttribute("href"), a.textContent.trim());
+    });
+  });
+  langHooks.push(syncLightboxLang);
 
   /* Idioma inicial: ?lang= > salvo > padrão português */
   var saved = null; try { saved = localStorage.getItem("tt_lang"); } catch (e) {}
