@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Troque tupilena.github.io pelo endereço real do site
-Sitemap: https://tupilena.github.io/sitemap.xml
+Sitemap: https://temperotupinamba.com.br/sitemap.xml
