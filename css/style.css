@@ -104,7 +104,7 @@ section{padding:4.2rem 0}
 .daytabs button.is-today::after{content:"";position:absolute;top:-3px;right:-3px;width:12px;height:12px;border-radius:50%;background:var(--tomato);border:2px solid #fff}
 .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem}
 .dish{background:#fffdf5;border:2px dashed rgba(30,72,38,.28);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s,border-color .2s;scroll-margin-top:calc(var(--head) + 80px)}
-.dish-photo{aspect-ratio:4/3;background:var(--cream-2);overflow:hidden}
+.dish-photo{position:relative;aspect-ratio:4/3;background:var(--cream-2);overflow:hidden}
 .dish-photo img{width:100%;height:100%;object-fit:cover}
 .ph{display:grid;place-items:center;font-size:3.2rem}
 .ph-2{background:radial-gradient(circle at 30% 30%,#ffe3b0,#f2b866)}
@@ -241,7 +241,7 @@ address svg{margin-top:.2rem}
 
 
 /* Lightbox: ampliar fotos do cardápio */
-.zoom-trig{display:block;width:100%;height:100%;padding:0;border:0;background:transparent;cursor:zoom-in}
+.zoom-trig{appearance:none;-webkit-appearance:none;display:block;position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;font:inherit;color:inherit;cursor:zoom-in}.zoom-trig:focus{outline:none}.zoom-trig:focus-visible{outline:3px solid var(--sun-2);outline-offset:-3px}
 a.js-lightbox{cursor:zoom-in}
 body.lb-open{overflow:hidden}
 .lightbox{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,8,4,.92);align-items:center;justify-content:center;padding:3.5rem .75rem 1rem;padding-top:max(3.5rem,env(safe-area-inset-top));padding-right:max(.75rem,env(safe-area-inset-right));padding-bottom:max(1rem,env(safe-area-inset-bottom));padding-left:max(.75rem,env(safe-area-inset-left));cursor:zoom-out}
